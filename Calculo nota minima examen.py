@@ -86,6 +86,20 @@ def registro_notas():
             notas = []
             print("Se descartaron las notas ingresadas.")
 
+    # Validación final: debe ser exactamente 100%
+    if total_ponderaciones != 100:
+        print(f"\nLa suma total de las ponderaciones es {total_ponderaciones}%, y debe ser exactamente 100%.")
+        print("Notas ingresadas:")
+        for i, n in enumerate(notas, 1):
+            print(f"  Nota {i}: {n['nota']} con {n['ponderacion']}%")
+
+        opcion = input("\n¿Desea volver a ingresar las notas? (s/n): ").lower()
+        if opcion == "s":
+            registro_notas()
+        else:
+            notas = []
+            print("Se descartaron las notas ingresadas.")
+
 # Función para registrar notas de controles y devolver su promedio y ponderación
 def controles():
     print("\n--- Promedio de controles ---")
