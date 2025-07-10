@@ -10,10 +10,10 @@ ordinales = ["primera", "segunda", "tercera", "cuarta", "quinta"]
 # Función principal para registrar las notas del ramo
 def registro_notas():
     global notas
-    notas = []  # Reiniciamos la lista de notas por si ya tenía datos
-    total_ponderaciones = 0  # Lleva el total acumulado de las ponderaciones
+    notas = []
+    total_ponderaciones = 0
 
-    # Pedir cantidad total de notas del ramo
+    # Solicita cuántas notas habrá
     while True:
         try:
             limite = int(input("Ingrese la cantidad total de notas del ramo: "))
@@ -24,63 +24,61 @@ def registro_notas():
         except ValueError:
             print("Ingrese un valor numérico válido.")
 
-    # Preguntar si una de las notas corresponde a un promedio de controles
+    # Pregunta si una nota será un promedio de controles
     confirmacion = input("¿Una de esas notas es un promedio de controles? (s/n): ").lower()
     usar_control = (confirmacion == "s")
 
-    # Si hay controles, se reserva una nota para eso y se llama a la función controles()
     if usar_control:
-        limite -= 1  # Reservamos una nota para los controles
-        promedio_control, pondera_control = controles()  # Obtenemos nota promedio y su ponderación
+        limite -= 1  # Reservamos un espacio para la nota de controles
+        promedio_control, pondera_control = controles()
         notas.append({
             "nota": promedio_control,
             "ponderacion": pondera_control
         })
-        total_ponderaciones += pondera_control  # Sumamos esa ponderación al total
+        total_ponderaciones += pondera_control
 
-    # Ingreso de las notas restantes (las normales)
+    print("\n--- INGRESO DE NOTAS ---")
+    lista_notas_temporales = []
+
     for i in range(limite):
-        print(f"\nNota {ordinales[i] if i < len(ordinales) else f'#{i+1}'}:")
-
-        # Validación de nota entre 1 y 7
         while True:
             try:
-                nota = float(input("Ingrese la nota (1 al 7): "))
+                nota = float(input(f"Ingrese la {ordinales[i] if i < len(ordinales) else f'#{i+1}'} nota (1 al 7): "))
                 if 1 <= nota <= 7:
+                    lista_notas_temporales.append(nota)
                     break
                 else:
                     print("La nota debe estar entre 1 y 7.")
             except ValueError:
                 print("Ingrese una nota válida.")
 
-        # Validación de ponderación (mayor a 0 y que no supere 100%)
+    print("\n--- INGRESO DE PONDERACIONES ---")
+
+    for i in range(limite):
         while True:
             try:
-                pondera = int(input("Ingrese la ponderación de la prueba (ej: 15): "))
+                pondera = int(input(f"Ingrese la ponderación de la {ordinales[i] if i < len(ordinales) else f'#{i+1}'} nota (%): "))
                 if pondera <= 0:
                     print("La ponderación debe ser mayor que 0.")
                 elif total_ponderaciones + pondera > 100:
                     print(f"La suma total no puede superar el 100%. Ya llevas {total_ponderaciones}%.")
                 else:
+                    notas.append({
+                        "nota": lista_notas_temporales[i],
+                        "ponderacion": pondera
+                    })
+                    total_ponderaciones += pondera
                     break
             except ValueError:
                 print("Ingrese una ponderación válida.")
 
-        # Guardamos la nota en la lista
-        notas.append({
-            "nota": nota,
-            "ponderacion": pondera
-        })
-        total_ponderaciones += pondera
-
-    # Verificación final de que la suma total de ponderaciones sea 100%
+    # Validación final: debe ser exactamente 100%
     if total_ponderaciones != 100:
         print(f"\nLa suma total de las ponderaciones es {total_ponderaciones}%, y debe ser exactamente 100%.")
         print("Notas ingresadas:")
         for i, n in enumerate(notas, 1):
             print(f"  Nota {i}: {n['nota']} con {n['ponderacion']}%")
 
-        # Opción para repetir el ingreso si hay error en la ponderación
         opcion = input("\n¿Desea volver a ingresar las notas? (s/n): ").lower()
         if opcion == "s":
             registro_notas()
